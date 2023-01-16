@@ -3,7 +3,7 @@
   "type": "library",
   "description": "A library for stringifying and parsing complex data. Inspired by the devalue JavaScript library.",
   "minimum-stability": "stable",
-  "license": "MIT License",
+  "license": "MIT",
   "homepage": "https://github.com/Maaaarcel/devalue-php",
   "version": "1.0.0",
   "keywords": [
@@ -18,7 +18,8 @@
     }
   ],
   "scripts": {
-    "bench": "phpbench run tests/Benchmark --report aggregate"
+    "bench": "phpbench run tests/Benchmark --report aggregate",
+    "test": "phpunit --configuration tests/Unit/phpunit.xml"
   },
   "require": {
     "php": "^8.1"
