@@ -9,7 +9,7 @@ some slight changes to improve the performance with PHP.
 
 ## Installation
 
-Install it user [composer](https://packagist.org/packages/maaaarcel/devalue-php):
+Install it using [composer](https://packagist.org/packages/maaaarcel/devalue-php):
 
 ```shell
 composer require maaaarcel/devalue-php
