@@ -7,6 +7,14 @@ All credit for the parsing and stringifying logic goes to the creator and contri
 the [devalue](https://github.com/Rich-Harris/devalue) library. The logic in this implementation is mostly the same, with
 some slight changes to improve the performance with PHP.
 
+## Installation
+
+Install it user [composer](https://packagist.org/packages/maaaarcel/devalue-php):
+
+```shell
+composer require maaaarcel/devalue-php
+```
+
 ## Usage
 
 The `Devalue` class has a `stringify` and a `parse` method, used for stringifying and parsing on the backend.
