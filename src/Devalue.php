@@ -29,6 +29,22 @@ final class Devalue
     }
 
     /**
+     * Converts a devalue array to an un-flattened php array. Useful, if your devalue data is inside a property of a
+     * regular json payload.
+     *
+     * @param stdClass|array|int $parsed
+     *
+     * @return int|null|float|string|bool|stdClass|ArrayObject|DateTime|JsTypeInterface|JsValue
+     *
+     * @throws DevalueException
+     */
+    public static function unflatten(
+        stdClass|array|int $parsed
+    ): int|null|float|string|bool|stdClass|ArrayObject|DateTime|JsTypeInterface|JsValue {
+        return (new Parser())->unflatten($parsed);
+    }
+
+    /**
      * Stringifies the passed value.
      *
      * @param mixed $value value to stringify

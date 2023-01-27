@@ -17,7 +17,7 @@ composer require maaaarcel/devalue-php
 
 ## Usage
 
-The `Devalue` class has a `stringify` and a `parse` method, used for stringifying and parsing on the backend.
+The `Devalue` class has the `stringify`, `parse` and `unflatten` methods, used for stringifying and parsing on the backend.
 
 ```php
 use Maaaarcel\DevaluePhp\Devalue;
@@ -86,6 +86,17 @@ $parsedData = Devalue::parse($dataStr);
 //     }
 //   }
 // }
+
+// if your devalue payload was inside a normal JSON string, you can use the value from json_decode with the `unflatten`
+// method like so:
+
+$json = '{
+    "type": "data",
+    "data": [{...devalue data...}]
+}';
+$payload = json_decode($json);
+
+$data = Devalue::unflatten($payload->data);
 ```
 
 `Devalue::stringify` can handle the following data types:
@@ -111,8 +122,9 @@ $parsedData = Devalue::parse($dataStr);
 - `[1, 2, 3] (list)` (gets converted to a JS array)
 - `['a' => 1, 'b' => 2, 'c' => 3] (assoc array)` (gets converted to a JS object)
 
-The `Devalue::parse` method converts some JavaScript values into objects/enum values for a more accurate representation
-of the data. Those objects/enum values can also be used to pass those JavaScript values when using `Devalue::stringify`.
+The `Devalue::parse` and `Devalue::unflatten` methods convert some JavaScript values into objects/enum values for a more 
+accurate representation of the data. Those objects/enum values can also be used to pass those JavaScript values when 
+using `Devalue::stringify`.
 
 Here is a list of the conversions (left: JavaScript value, right: PHP value):
 
