@@ -205,11 +205,9 @@ final class DevalueTest extends TestCase
     {
         $customType = new CustomType('foo', 'bar');
         $serialized = Devalue::stringify($customType);
-        var_dump($serialized);
         $this->assertSame('[["CustomType",1],{"field1":2,"field2":3},"foo","bar"]', $serialized);
 
         $deserialized = Devalue::parse($serialized, [CustomType::class]);
-        var_dump($deserialized);
         $this->assertInstanceOf(CustomType::class, $deserialized);
         $this->assertSame($deserialized->field1, 'foo');
 

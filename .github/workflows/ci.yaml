@@ -19,12 +19,9 @@ jobs:
       - name: Composer
         uses: php-actions/composer@v6
 
-      - name: Composer
-        uses: php-actions/composer@v6
-        with:
-          command: test
+      - name: Run tests
+        run: composer run test
 
-      - name: Composer
-        uses: php-actions/composer@v6
-        with:
-          command: bench
+
+      - name: Run benchmark
+        run: composer run bench
