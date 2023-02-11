@@ -205,24 +205,8 @@ original [devalue](https://github.com/Rich-Harris/devalue) library.
 
 ## Performance
 
-The performance is obviously worse than basic `json_encode` and `json_decode`. Currently, `devalue-php` is about 50x
-slower than json for stringifying and 20x slower for parsing. Feel free to contribute, if you find a way to improve the
-performance!
-
-Here is a benchmark run with [phpbench](https://github.com/phpbench/phpbench) :
-
-`phpbench run tests/Benchmark --report aggregate`
-
-```
-+--------------+-----------------------+-----+------+-----+----------+----------+--------+
-| benchmark    | subject               | set | revs | its | mem_peak | mode     | rstdev |
-+--------------+-----------------------+-----+------+-----+----------+----------+--------+
-| DevalueBench | benchDevalueStringify |     | 1000 | 8   | 1.613mb  | 26.696μs | ±6.39% |
-| DevalueBench | benchJsonEncode       |     | 1000 | 8   | 1.613mb  | 0.506μs  | ±7.06% |
-| DevalueBench | benchDevalueParse     |     | 1000 | 8   | 1.613mb  | 35.590μs | ±8.40% |
-| DevalueBench | benchJsonDecode       |     | 1000 | 8   | 1.613mb  | 1.996μs  | ±2.11% |
-+--------------+-----------------------+-----+------+-----+----------+----------+--------+
-```
+Please see the github action result of the current commit for performance numbers. The benchmarks are run with
+[phpbench](https://github.com/phpbench/phpbench)
 
 ## License
 
