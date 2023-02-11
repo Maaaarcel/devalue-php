@@ -24,9 +24,13 @@ final class Stringifier
 {
     private const JS_MAX_INT = 9007199254740991;
 
+    /** @var array<int, mixed> */
     private array $stringified = [];
+    /** @var SplObjectStorage<object, int> */
     private SplObjectStorage $objectIndexes;
+    /** @var array<string|int, int> */
     private array $primitiveIndexes = [];
+    /** @var string[] */
     private array $keys = [];
     private int $p = 0;
 
@@ -98,6 +102,14 @@ final class Stringifier
 
         if (is_object($thing)) {
             $this->objectIndexes->offsetSet($thing, $index);
+
+            if ($thing instanceof DevalueSerializable) {
+                $this->stringified[$index] = [
+                    $thing::devalueType(),
+                    self::flatten($thing->devalueSerialize())
+                ];
+                return $index;
+            }
         } else {
             $this->primitiveIndexes[$serializedThing] = $index;
         }

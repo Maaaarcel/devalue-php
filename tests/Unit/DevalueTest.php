@@ -18,11 +18,15 @@ use Maaaarcel\DevaluePhp\JavaScript\JsRegExp;
 use Maaaarcel\DevaluePhp\JavaScript\JsSet;
 use Maaaarcel\DevaluePhp\JavaScript\JsStringObject;
 use Maaaarcel\DevaluePhp\JavaScript\JsValue;
+use Maaaarcel\Tests\Fixtures\CustomType;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 final class DevalueTest extends TestCase
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function fixturesProvider(): array
     {
         return [
@@ -139,7 +143,7 @@ final class DevalueTest extends TestCase
     /**
      * @throws DevalueException
      */
-    public function testSpecialStringify(): void
+    public function testStringifyArrays(): void
     {
         $this->assertSame('[[1,2,3],"a","b","c"]', Devalue::stringify(['a', 'b', 'c']), 'Simple arrays get converted');
         $this->assertSame(
@@ -147,14 +151,37 @@ final class DevalueTest extends TestCase
             Devalue::stringify(['foo' => 'bar', 'x-y' => 'z']),
             'Associative Arrays get converted'
         );
+
+        $arr = [];
+        $arr['self'] = &$arr;
+        $this->assertSame('[{"self":0}]', Devalue::stringify($arr), 'Array self references');
+    }
+
+    /**
+     * @throws DevalueException
+     */
+    public function testStringifySpecialValues()
+    {
         $this->assertSame('-3', Devalue::stringify(NAN), 'NAN gets converted');
         $this->assertSame('-4', Devalue::stringify(INF), 'INF gets converted');
         $this->assertSame('-5', Devalue::stringify(-INF), '-INF gets converted');
+    }
+
+    public function testStringifyBigInt(): void
+    {
+
         $this->assertSame(
             '[["BigInt","9007199254740992"]]',
             Devalue::stringify(9007199254740992),
             'Big integers are converted into BigInt'
         );
+    }
+
+    /**
+     * @throws DevalueException
+     */
+    public function testStringifyJsonSerializable(): void
+    {
         $this->assertSame(
             '[{"foo":1},"bar"]',
             Devalue::stringify(
@@ -169,10 +196,28 @@ final class DevalueTest extends TestCase
             ),
             'JsonSerializable objects get converted'
         );
+    }
 
-        $arr = [];
-        $arr['self'] = &$arr;
-        $this->assertSame('[{"self":0}]', Devalue::stringify($arr), 'Array self references');
+    /**
+     * @throws DevalueException
+     */
+    public function testCustomTypes(): void
+    {
+        $customType = new CustomType('foo', 'bar');
+        $serialized = Devalue::stringify($customType);
+        var_dump($serialized);
+        $this->assertSame('[["CustomType",1],{"field1":2,"field2":3},"foo","bar"]', $serialized);
+
+        $deserialized = Devalue::parse($serialized, [CustomType::class]);
+        var_dump($deserialized);
+        $this->assertInstanceOf(CustomType::class, $deserialized);
+        $this->assertSame($deserialized->field1, 'foo');
+
+        $serializedArray = Devalue::stringify([$customType, $customType]);
+        $this->assertSame('[[1,1],["CustomType",2],{"field1":3,"field2":4},"foo","bar"]', $serializedArray);
+
+        $deserializedArray = Devalue::parse($serializedArray, [CustomType::class]);
+        $this->assertSame($deserializedArray[0], $deserializedArray[1]);
     }
 
     /**

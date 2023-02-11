@@ -12,6 +12,8 @@ use Serializable;
  * Set implementation with similar API to a JavaScript Set.
  *
  * @template T
+ *
+ * @implements Iterator<int, T>
  */
 final class JsSet implements Countable, Iterator, Serializable, JsTypeInterface
 {
@@ -94,7 +96,7 @@ final class JsSet implements Countable, Iterator, Serializable, JsTypeInterface
         }
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->data = [];
     }
@@ -105,7 +107,7 @@ final class JsSet implements Countable, Iterator, Serializable, JsTypeInterface
     }
 
     /**
-     * @return T
+     * @return T|false
      */
     public function current(): mixed
     {

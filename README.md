@@ -97,6 +97,60 @@ $json = '{
 $payload = json_decode($json);
 
 $data = Devalue::unflatten($payload->data);
+
+// You can create custom types to transfer common objects. Custom types must implement the `DevalueSerializable` interface
+
+use Maaaarcel\DevaluePhp\DevalueSerializable;
+
+class CustomType implements DevalueSerializable
+{
+
+    public function __construct(
+        public readonly string $field1 = '',
+        public readonly string $field2 = ''
+    )
+    {
+    }
+
+    // specify the name of the type (used for parsing in the frontend library)
+    static function devalueType(): string
+    {
+        return 'CustomType';
+    }
+
+    // create a class instance from the serialized data
+    static function devalueParse(array $serialized): static
+    {
+        return new self($serialized['field1'], $serialized['field2']);
+    }
+
+    // serialize the data
+    function devalueSerialize(): array
+    {
+        return [
+            'field1' => $this->field1,
+            'field2' => $this->field2
+        ];
+    }
+}
+
+$stringifiedCustomType = Devalue::stringify(new CustomType('foo', 'bar'));
+// => '[["CustomType",1],{"field1":2,"field2":3},"foo","bar"]'
+
+// To parse custom types, you can either specify your custom types globally, or individually for every parse.
+
+// register type globally
+Devalue::registerCustomTypes([CustomType::class]);
+
+$parsedCustomType = Devalue::parse($stringifiedCustomType, [CustomType::class]); // register type only for this parse
+// => class CustomType#552 (2) {
+//   public readonly string $field1 =>
+//   string(3) "foo"
+//   public readonly string $field2 =>
+//   string(3) "bar"
+// }
+
+
 ```
 
 `Devalue::stringify` can handle the following data types:

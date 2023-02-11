@@ -31,11 +31,28 @@ final class Parser
     private stdClass|array|int $values;
 
     /**
+     * @var class-string<DevalueSerializable>[]
+     */
+    private array $customTypes = [];
+
+    /**
+     * @param class-string<DevalueSerializable>[] $customTypes
+     * @return void
+     */
+    public function registerCustomTypes(array $customTypes): void
+    {
+        /** @var DevalueSerializable $customType (this type hint is a lie to fix autocomplete) */
+        foreach ($customTypes as $customType) {
+            $this->customTypes[$customType::devalueType()] = $customType;
+        }
+    }
+
+    /**
      * @throws DevalueException
      */
     public function parse(
         string $serialized
-    ): int|null|float|string|bool|stdClass|ArrayObject|DateTime|JsTypeInterface|JsValue {
+    ): int|null|float|string|bool|stdClass|ArrayObject|DateTime|JsTypeInterface|JsValue|DevalueSerializable {
         return $this->unflatten(json_decode($serialized));
     }
 
@@ -46,7 +63,7 @@ final class Parser
      */
     public function unflatten(
         stdClass|array|int $parsed
-    ): int|null|float|string|bool|stdClass|ArrayObject|DateTime|JsTypeInterface|JsValue {
+    ): int|null|float|string|bool|stdClass|ArrayObject|DateTime|JsTypeInterface|JsValue|DevalueSerializable {
         $this->values = $parsed;
 
         if (is_int($parsed)) {
@@ -95,6 +112,12 @@ final class Parser
                 if (is_string($value[0])) {
                     $type = $value[0];
 
+                    if (array_key_exists($type, $this->customTypes)) {
+                        /** @var DevalueSerializable $customType (this type hint is a lie to fix autocomplete) */
+                        $customType = $this->customTypes[$type];
+                        return $this->hydrated[$index] = $customType::devalueParse((array)self::hydrate($value[1]));
+                    }
+
                     switch ($type) {
                         case 'Date':
                             $this->hydrated[$index] = new DateTime($value[1]);
@@ -142,6 +165,9 @@ final class Parser
                                 $object->{$value[$i]} = $this->hydrate($value[$i + 1]);
                             }
                             break;
+
+                        default:
+                            throw new DevalueException('Unknown type `' . $type . '`', 3);
                     }
                 } else {
                     $array = new ArrayObject();

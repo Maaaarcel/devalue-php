@@ -14,6 +14,9 @@ use Serializable;
  *
  * @template TKey
  * @template TValue
+ *
+ * @implements ArrayAccess<TKey, TValue>
+ * @implements Iterator<TKey, TValue>
  */
 final class JsMap implements Countable, Iterator, Serializable, ArrayAccess, JsTypeInterface
 {
@@ -27,6 +30,9 @@ final class JsMap implements Countable, Iterator, Serializable, ArrayAccess, JsT
      */
     private array $data = [];
 
+    /**
+     * @param array<array{TKey, TValue}> $entries
+     */
     public function __construct(array $entries = [])
     {
         $this->insertEntries($entries);
@@ -128,11 +134,14 @@ final class JsMap implements Countable, Iterator, Serializable, ArrayAccess, JsT
     }
 
     /**
-     * @return TKey
+     * @return TKey|null
      */
     public function key(): mixed
     {
         $key = key($this->data);
+        if (is_null($key)) {
+            return null;
+        }
         if (array_key_exists($key, $this->objectMap)) {
             return $this->objectMap[$key];
         }

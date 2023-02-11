@@ -16,7 +16,7 @@ enum JsValue: int
     case NegativeInfinity = -5;
     case NegativeZero = -6;
 
-    public function toPhpValue(): int|float
+    public function toPhpValue(): int|float|null
     {
         return match ($this) {
             self::Undefined, self::Hole => null,
